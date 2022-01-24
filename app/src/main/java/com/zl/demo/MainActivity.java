@@ -19,17 +19,19 @@ import java.io.File;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
+
     private ImageView ivT1, ivT2, ivT31, ivT32, ivT41, ivT42;
     private Button btnT1, btnT2;
     private TextView tvT1, tvT2, tvT3, tvT4;
     private FaceDetector detector;
-    private String imgPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "ncnn";
-
+    //    private String imgPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "ncnn";
+    private String imgPath = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        imgPath = new File(getFilesDir(), "ncnn").getAbsolutePath();
         ivT1 = findViewById(R.id.iv_t1);
         btnT1 = findViewById(R.id.btn_t1);
         tvT1 = findViewById(R.id.tv_t1);
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         tvT4 = findViewById(R.id.tv_t4);
         ivT1.post(() -> ivT1.setImageBitmap(ImageUtil.getBitmapByAssets(ivT1.getContext(), "img/test.jpg")));
         ivT2.post(() -> ivT2.setImageBitmap(ImageUtil.getBitmapByAssets(ivT2.getContext(), "img/test2.jpg")));
-       btnT1.setOnClickListener(v -> {
+        btnT1.setOnClickListener(v -> {
             String msg = detect(v.getContext(), "img/test.jpg", ivT1);
             tvT1.setText(msg);
         });
@@ -55,8 +57,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_t1_1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String msg = getFeature(v.getContext(), "img/test.jpg", ivT1);
-                tvT1.setText(msg);
+                String msg = null;
+                try {
+                    msg = getFeature(v.getContext(), "img/test.jpg", ivT1);
+                    tvT1.setText(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
         });
         findViewById(R.id.btn_t3).setOnClickListener(new View.OnClickListener() {
@@ -99,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         });
         detector = new FaceDetector();
         detector.setThreadNum(1);
-        boolean init = detector.init(this, false);
+        boolean init = detector.init(this, true);
         Log.i("canshu", "init result:" + init);
         ImageUtil.copyImage2SD(this, imgPath);
     }

@@ -1,7 +1,6 @@
 package com.zl.face;
 
 import android.content.Context;
-import android.os.Environment;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,7 +21,7 @@ public class FaceDetector {
      * @return 初始话结果
      */
     public boolean init(Context mContext, boolean gpu) {
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "ncnn";
+        String path = new File(mContext.getFilesDir() ,"ncnn").getAbsolutePath();
         String modelPath = copyModel2SD(mContext, "ultra", path);
         String binPath = modelPath + File.separator + "RFB-320.bin";
         String paramPath = modelPath + File.separator + "RFB-320.param";
@@ -133,6 +132,7 @@ public class FaceDetector {
         if (!file.exists()) {
             file.mkdir();
         }
+
         try {
             copyAssets(mContext, model, modelPath);
         } catch (IOException e) {
